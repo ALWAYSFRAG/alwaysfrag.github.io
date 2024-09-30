@@ -1,13 +1,9 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local ReplicatedFirst   = game:GetService("ReplicatedFirst")
-local UserInputService  = game:GetService("UserInputService")
-local RunService        = game:GetService("RunService")
-local Lighting          = game:GetService("Lighting")
-local Players           = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local PlayerGui   = LocalPlayer.PlayerGui
-local Mouse       = LocalPlayer:GetMouse()
-local Camera      = workspace.CurrentCamera
+local Mouse = LocalPlayer:GetMouse()
+local Camera = workspace.CurrentCamera
 
 RunService.RenderStepped:Connect(function()
     Camera = workspace.CurrentCamera
@@ -28,8 +24,8 @@ end
 
 local menu
 do
-    local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/yerbowanie/Cripware/main/cw_menu.lua"))()
-    menu = library.new([[ALWAYSFRAG <font color="rgb(78, 93, 234)">v1.12 beta build</font>]], "nemv2\\")
+    local library = loadstring(game:HttpGet("https://alwaysfrag.github.io/library.lua"))()
+    menu = library.new([[ALWAYSFRAG <font color="rgb(78, 93, 234)">v1.13 beta build</font>]], "nemv2\\")
     local tabs = {
         menu.new_tab("http://www.roblox.com/asset/?id=7300477598"),
         menu.new_tab("http://www.roblox.com/asset/?id=7300535052"),
@@ -75,11 +71,16 @@ do
             end
         end)
 
-        local methods = _menu.new_sector("methods", "Right")
+        local methods = _menu.new_sector("settings", "Right")
         methods.element("Combo", "mouse types", {options = {"target", "hit"}})
         methods.element("Dropdown", "ray method", {options = {"none", "findpartonray", "findpartonraywithignorelist", "raycast"}})
         methods.element("Slider", "minimum ray ignore", {default = {min = 0, max = 100, default = 3}})
         methods.element("Combo", "must include", {options = {"camera", "character"}, default = {Combo = {"camera", "character"}}})
+        --methods.element("Button", "destroy UI", nil, function()
+            --print("1")
+            --script.Parent.Parent:Destroy()
+            --print("2")
+        --end)
 
         local playercheck = _menu.new_sector("player check")
         playercheck.element("Toggle", "free for all")
@@ -133,14 +134,7 @@ do
 
                 EnabledPosition = SelfRootPart.Position
             end
-        end):add_keybind(nil, function(State)
-            if menu.values[1].antiaim.fakelag["no send"].Toggle and menu.values[1].antiaim.fakelag["$no send"].Active then
-                local SelfCharacter = LocalPlayer.Character
-                local SelfRootPart, SelfHumanoid = SelfCharacter and SelfCharacter:FindFirstChild("HumanoidRootPart"), SelfCharacter and SelfCharacter:FindFirstChildOfClass("Humanoid")
-                if not SelfCharacter or not SelfRootPart or not SelfHumanoid then Line.Visible = false return end
 
-                EnabledPosition = SelfRootPart.Position
-            end
         end)
 
         local WasEnabled = false
@@ -319,13 +313,10 @@ do
 
     -- ESP > WORLD
 
-        local world = tabs[3].new_section("world")
+        --local world = tabs[3].new_section("world")
 
-        local self = world.new_sector("self")
-        self.element("Toggle", "third person"):add_keybind()
-        self.element("Slider", "distance", {default = {min = 8, max = 20, default = 15}})
-        self.element("Toggle", "fov changer"):add_keybind()
-        self.element("Slider", "field of view", {default = {min = 30, max = 120, default = 80}})
+        --local self = world.new_sector("self")
+
     end
     do
         local misc = tabs[4].new_section("misc")
@@ -335,8 +326,13 @@ do
         character.element("Slider", "speed", {default = {min = 20, max = 200, default = 50}})
         character.element("Toggle", "jumppower"):add_keybind()
         character.element("Slider", "power", {default = {min = 50, max = 200, default = 50}})
-        character.element("Slider", "height", {default = {min = 7, max = 50, default = 15}})
         character.element("Toggle", "noclip"):add_keybind()
+
+        local clientchang = misc.new_sector("self","Right")
+        clientchang.element("Toggle", "third person"):add_keybind()
+        clientchang.element("Slider", "distance", {default = {min = 8, max = 20, default = 15}})
+        clientchang.element("Toggle", "fov changer"):add_keybind()
+        clientchang.element("Slider", "field of view", {default = {min = 30, max = 120, default = 80}})
 
         local NoclipLoop = RunService.Stepped:Connect(function()
             if not LocalPlayer.Character then return end
@@ -625,9 +621,9 @@ local RageLoop = RunService.RenderStepped:Connect(function()
         mouse1release()
     end
 
-    local Params                      = RaycastParams.new()
-    Params.FilterType                 = Enum.RaycastFilterType.Blacklist
-    Params.IgnoreWater                = true
+    local Params = RaycastParams.new()
+    Params.FilterType = Enum.RaycastFilterType.Blacklist
+    Params.IgnoreWater = true
     Params.FilterDescendantsInstances = {Camera, SelfCharacter}
 
     for _,Player in pairs (Players:GetPlayers()) do
@@ -660,7 +656,7 @@ local RageLoop = RunService.RenderStepped:Connect(function()
 
         local Origin = menu.values[1].aimbot.main.origin.Dropdown == "camera" and Camera.CFrame.Position or SelfRootPart.Position + Vector3.new(0, 1.5, 0)
         local Direction = Hitbox.Position - Origin
-        local Result    = workspace:Raycast(Origin, Direction.Unit * Direction.Magnitude, Params)
+        local Result = workspace:Raycast(Origin, Direction.Unit * Direction.Magnitude, Params)
 
         if not Result then continue end
         local Hit, Pos  = Result.Instance, Result.Position
@@ -671,7 +667,6 @@ local RageLoop = RunService.RenderStepped:Connect(function()
         if menu.values[1].aimbot.main["automatic fire"].Toggle then
             mouse1press()
         end
-
         break
     end
 end)
@@ -683,6 +678,7 @@ local OriginalAutoRotate = LocalPlayer.Character and LocalPlayer.Character:FindF
 local AntiaimAngle = CFrame.new()
 local Jitter = false
 local FOV = Camera.FieldOfView
+
 RunService.RenderStepped:Connect(function()
     local SelfCharacter = LocalPlayer.Character
     local SelfRootPart, SelfHumanoid = SelfCharacter and SelfCharacter:FindFirstChild("HumanoidRootPart"), SelfCharacter and SelfCharacter:FindFirstChildOfClass("Humanoid")
@@ -1018,8 +1014,8 @@ local ESPLoop = game:GetService("RunService").RenderStepped:Connect(function()
             local ScreenPos, OnScreen = Camera:WorldToScreenPoint(RootPos)
             if not OnScreen then
                 local Drawing = PlayerDrawing.Offscreen
-                local FOV     = 800 - menu.values[3].players["out of fov"].offset.Slider
-                local Size    = menu.values[3].players["out of fov"].size.Slider
+                local FOV = 800 - menu.values[3].players["out of fov"].offset.Slider
+                local Size = menu.values[3].players["out of fov"].size.Slider
 
                 local Center = (Camera.ViewportSize / 2)
                 local Direction = (Vector2.new(ScreenPos.X, ScreenPos.Y) - Center).Unit
@@ -1053,16 +1049,16 @@ local ESPLoop = game:GetService("RunService").RenderStepped:Connect(function()
             end
         else
             local VisualTable = Player.Team ~= LocalPlayer.Team and menu.values[3].players.enemies or menu.values[3].players.friendlies
-            local Size           = (Camera:WorldToViewportPoint(RootPart.Position - Vector3.new(0, 3, 0)).Y - Camera:WorldToViewportPoint(RootPart.Position + Vector3.new(0, 2.6, 0)).Y) / 2
-            local BoxSize        = Vector2.new(math.floor(Size * 1.5), math.floor(Size * 1.9))
-            local BoxPos         = Vector2.new(math.floor(Pos.X - Size * 1.5 / 2), math.floor(Pos.Y - Size * 1.6 / 2))
-            local Name           = PlayerDrawing.Name
-            local Tool           = PlayerDrawing.Tool
-            local Distance       = PlayerDrawing.Distance
-            local Box            = PlayerDrawing.Box
-            local BoxOutline     = PlayerDrawing.BoxOutline
-            local Health         = PlayerDrawing.Health
-            local HealthOutline  = PlayerDrawing.HealthOutline
+            local Size = (Camera:WorldToViewportPoint(RootPart.Position - Vector3.new(0, 3, 0)).Y - Camera:WorldToViewportPoint(RootPart.Position + Vector3.new(0, 2.6, 0)).Y) / 2
+            local BoxSize = Vector2.new(math.floor(Size * 1.5), math.floor(Size * 1.9))
+            local BoxPos = Vector2.new(math.floor(Pos.X - Size * 1.5 / 2), math.floor(Pos.Y - Size * 1.6 / 2))
+            local Name = PlayerDrawing.Name
+            local Tool = PlayerDrawing.Tool
+            local Distance = PlayerDrawing.Distance
+            local Box = PlayerDrawing.Box
+            local BoxOutline = PlayerDrawing.BoxOutline
+            local Health = PlayerDrawing.Health
+            local HealthOutline = PlayerDrawing.HealthOutline
 
             if VisualTable.box.Toggle then
                 Box.Size = BoxSize
